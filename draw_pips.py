@@ -42,9 +42,9 @@ COLORS = {
 }
 
 
-def setup_figure(corner=False):
+def setup_figure(corners=False):
     """Set up the figure size based on whether corners are included."""
-    fig_size = (2.5, 3.5) if corner else (2, 3)
+    fig_size = (2.5, 3.5) if corners else (2, 3)
     fig, ax = plt.subplots(figsize=fig_size)
     ax.set_xlim(0, 2)
     ax.set_ylim(0, 1)
@@ -60,14 +60,14 @@ def add_corner_text(ax, value, symbol, color):
             ha='center', va='center', fontname='Times New Roman', rotation=180)
 
 
-def save_card(value, suit, coords, output_dir, corner=False):
+def save_card(value, suit, coords, output_dir, corners=False):
     """Save a single card as a PNG file."""
-    fig, ax = setup_figure(corner)
+    fig, ax = setup_figure(corners)
 
     symbol = CARD_SUITS[suit]
     color = COLORS[suit]
 
-    if corner:
+    if corners:
         add_corner_text(ax, value, symbol, color)
         x_shift, y_shift = 0.12, 0.15
     else:
@@ -83,24 +83,24 @@ def save_card(value, suit, coords, output_dir, corner=False):
     plt.close(fig)
 
 
-def generate_cards(output_dir, corner=False):
+def generate_cards(output_dir, corners=False):
     """Generate all playing cards and save them to the specified directory."""
     os.makedirs(output_dir, exist_ok=True)
 
     for value, coords in PIP_LAYOUTS.items():
         for suit in CARD_SUITS:
-            save_card(value, suit, coords, output_dir, corner=corner)
+            save_card(value, suit, coords, output_dir, corners=corners)
 
 
 def main():
     parser = argparse.ArgumentParser(description="Generate playing cards as PNG images.")
     parser.add_argument('--output-dir', type=str, default='playing_cards',
                         help='Directory to save the generated playing cards.')
-    parser.add_argument('--corner', action='store_true',
+    parser.add_argument('--corners', action='store_true',
                         help='Add the number and suit symbol to the top left and bottom right corners.')
     args = parser.parse_args()
 
-    generate_cards(args.output_dir, args.corner)
+    generate_cards(args.output_dir, args.corners)
 
 
 if __name__ == '__main__':
