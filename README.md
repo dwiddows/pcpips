@@ -1,6 +1,14 @@
 # pcpips
 Playing Card Pips - code for laying out the suit symbols for basic number playing cards.
 
+This is for making decks of cards where the face cards (Aces, Jokers, Queens, Kings, Jacks) are your own images, but the standard 2 thru 10 cards are just default layouts.
+This is useful especially when working with sites like [Make Playing Cards](https://www.makeplayingcards.com/products/playingcard/) that help to customize individual cards and then print the deck.
+At least, that was the initial use-case --- to fill in the defaults when it's only some of the special cards you want to be customized.
+
+There are output image files with and without corner numbers, checked in with the code. Feel free just to use the images if they already work for you.
+
+The layouts, sizes, colours, margins, and so on, have all been hand-tuned so far --- they look OK to me! But they haven't been calculated that carefully, feel free to edit the code directly to change them.
+
 # Simple Playing Card Generator
 
 This Python script generates the layout of standard playing cards using Matplotlib. It handles the placement of pips (the small symbols) and optional corner numbers and symbols. **This script serves as a template for creating the core design of playing cards**—you can easily add your own custom face cards or additional design elements.
