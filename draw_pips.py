@@ -10,27 +10,10 @@ CARD_SUITS = {
     'spades': '\u2660'
 }
 
-# Define x-coordinates for pip placement
-LEFT = 0.1
-MID = 0.5
-RIGHT = 0.9
-
-# Define the coordinates for each card value with the specified layouts for 8, 9, and 10
-PIP_LAYOUTS = {
-    '2': [(MID, 70), (MID, 10)],  # Vertical alignment
-    '3': [(MID, 70), (MID, 40), (MID, 10)],  # Vertical alignment
-    '4': [(LEFT, 70), (RIGHT, 70), (LEFT, 10), (RIGHT, 10)],
-    '5': [(LEFT, 70), (RIGHT, 70), (MID, 40), (LEFT, 10), (RIGHT, 10)],
-    '6': [(LEFT, 70), (RIGHT, 70), (LEFT, 40), (RIGHT, 40), (LEFT, 10), (RIGHT, 10)],
-    '7': [(LEFT, 70), (RIGHT, 70), (LEFT, 40), (RIGHT, 40), (LEFT, 10), (RIGHT, 10), (MID, 55)],
-    '8': [(LEFT, 70), (RIGHT, 70), (LEFT, 40), (RIGHT, 40), (LEFT, 10), (RIGHT, 10), (MID, 55), (MID, 25)],
-    '9': [(LEFT, 70), (RIGHT, 70), (LEFT, 50), (RIGHT, 50),
-          (LEFT, 30), (RIGHT, 30), (LEFT, 10), (RIGHT, 10),
-          (MID, 40)],  # One pip in the middle
-    '10': [(LEFT, 70), (RIGHT, 70), (LEFT, 50), (RIGHT, 50),
-           (LEFT, 30), (RIGHT, 30), (LEFT, 10), (RIGHT, 10),
-           (MID, 60), (MID, 20)]  # Two pips in the middle
-}
+SIDE_MARGIN = 0.5
+TOP_MARGIN = 0.5
+BOX_WIDTH = 2
+BOX_HEIGHT = 3
 
 # Define colors for the suits
 RED_COLOR = '#E80000'  # You can experiment with colors here
@@ -41,45 +24,49 @@ COLORS = {
     'spades': 'black'
 }
 
-
-def setup_figure(corners=False):
-    """Set up the figure size based on whether corners are included."""
-    fig_size = (2.5, 3.5) if corners else (2, 3)
-    fig, ax = plt.subplots(figsize=fig_size)
-    ax.set_xlim(0, 2)
-    ax.set_ylim(0, 1)
-    ax.axis('off')  # Hide axes
-    return fig, ax
-
-
-def add_corner_text(ax, value, symbol, color):
-    """Add the corner text to the card."""
-    ax.text(0, 1.2, f"{value}\n{symbol}", fontsize=24, color=color,
-            ha='center', va='center', fontname='Times New Roman')
-    ax.text(2.5, 0.05, f"{value}\n{symbol}", fontsize=24, color=color,
-            ha='center', va='center', fontname='Times New Roman', rotation=180)
+# Define the coordinates for the pips for each number card.
+PIP_LAYOUTS = {
+    '2': [(0.5, 60), (0.5, 0)],  # Vertical alignment
+    '3': [(0.5, 60), (0.5, 30), (0.5, 0)],  # Vertical alignment
+    '4': [(0.1, 60), (0.9, 60), (0.1, 0), (0.9, 0)],
+    '5': [(0.1, 60), (0.9, 60), (0.5, 30), (0.1, 0), (0.9, 0)],
+    '6': [(0.1, 60), (0.9, 60), (0.1, 30), (0.9, 30), (0.1, 0), (0.9, 0)],
+    '7': [(0.1, 60), (0.9, 60), (0.1, 30), (0.9, 30), (0.1, 0), (0.9, 0), (0.5, 45)],
+    '8': [(0.1, 60), (0.9, 60), (0.1, 30), (0.9, 30), (0.1, 0), (0.9, 0), (0.5, 45), (0.5, 15)],
+    '9': [(0.1, 60), (0.9, 60), (0.1, 40), (0.9, 40), (0.1, 20), (0.9, 20), (0.1, 0), (0.9, 0),
+          (0.5, 30)],  # One pip in the middle
+    '10': [(0.1, 60), (0.9, 60), (0.1, 40), (0.9, 40), (0.1, 20), (0.9, 20), (0.1, 0), (0.9, 0),
+           (0.5, 50), (0.5, 10)]  # Two pips in the middle column
+}
 
 
 def save_card(value, suit, coords, output_dir, corners=False):
     """Save a single card as a PNG file."""
-    fig, ax = setup_figure(corners)
+    fig_size = (BOX_WIDTH + 2*SIDE_MARGIN, BOX_HEIGHT + 2*TOP_MARGIN) if corners else (BOX_WIDTH, BOX_HEIGHT)
+    fig, ax = plt.subplots(figsize=fig_size)
+
+    ax.set_xlim(0, BOX_WIDTH + 2 * SIDE_MARGIN if corners else BOX_WIDTH)
+    ax.set_ylim(0, BOX_HEIGHT + 2 * TOP_MARGIN if corners else BOX_HEIGHT)
+    ax.axis('off')  # Hide axes
 
     symbol = CARD_SUITS[suit]
     color = COLORS[suit]
 
+    x_shift, y_shift = 0, 0
     if corners:
-        add_corner_text(ax, value, symbol, color)
-        x_shift, y_shift = 0.12, 0.15
-    else:
-        x_shift, y_shift = 0, 0
+        x_shift, y_shift = SIDE_MARGIN, TOP_MARGIN
+        ax.text(0, BOX_HEIGHT + TOP_MARGIN * 2, f"{value}\n{symbol}", fontsize=24, color=color,
+                ha='center', va='center', fontname='Times New Roman')
+        ax.text(2 * SIDE_MARGIN + BOX_WIDTH, 0, f"{value}\n{symbol}", fontsize=24, color=color,
+                ha='center', va='center', fontname='Times New Roman', rotation=180)
 
     # Plot the pips on the card
     for x, y in coords:
-        ax.text(2 * (x + x_shift), (y - 10) / 60 + y_shift, symbol, fontsize=60, color=color,
-                ha='center', va='center', fontname='Times New Roman')
+        ax.text(x * BOX_WIDTH + x_shift, (y / 60) * BOX_HEIGHT + y_shift, symbol,
+                fontsize=60, color=color, ha='center', va='center', fontname='Times New Roman')
 
     filename = os.path.join(output_dir, f"{value}_{suit}.png")
-    plt.savefig(filename, bbox_inches='tight', pad_inches=0.2)  # Added margin with pad_inches
+    plt.savefig(filename, bbox_inches=None)  # Added margin with pad_inches
     plt.close(fig)
 
 
